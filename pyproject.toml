@@ -1,0 +1,19 @@
+[build-sustem]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vexrag"
+description = "A Red Team framework that evaluates RAG functional correctness when the retrieval backend contains poisoned passages."
+authors = [
+    { name = "Oleg Burnaev", email="john-shepard-2154@yandex.ru" },
+]
+version = "0.3.0" # TODO: make dynamic
+requires-python=">=3.11"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.16.1",
+]
+
