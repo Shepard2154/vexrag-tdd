@@ -1,10 +1,9 @@
-
 name: test
 
 on:
   push:
     branches:
-      - master
+      - test/ci
   pull_request:
 
 jobs:
@@ -12,11 +11,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+       
+      - name: install uv and python
+        uses: astral-sh/setup-uv@v3
         with:
           python-version: "3.11"
-      - name: install packages via pip
-        run: pip install pytest
+
+      - name: create venv and sync dependencies
+        run: uv sync
       
-      - name: run pytest
-        run: pytest .
+      - name: install pytest
+        run: uv pip install pytest
+      
+      - name: run tests
+        run: uv run pytest .
+
