@@ -20,9 +20,6 @@ jobs:
       - name: create venv and sync dependencies
         run: uv sync
       
-      - name: install pytest
-        run: uv pip install pytest
-      
       - name: run tests
         run: uv run pytest .
 

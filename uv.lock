@@ -360,29 +360,22 @@ name = "vexrag"
 version = "0.3.0"
 source = { editable = "." }
 dependencies = [
-    { name = "mypy" },
-]
-
-[package.optional-dependencies]
-httpx = [
     { name = "httpx" },
 ]
 
 [package.dev-dependencies]
 dev = [
+    { name = "mypy" },
     { name = "pytest" },
     { name = "ruff" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "httpx", marker = "extra == 'httpx'", specifier = ">=0.28.1" },
-    { name = "mypy", specifier = ">=2.3.0" },
-]
-provides-extras = ["httpx"]
+requires-dist = [{ name = "httpx", specifier = ">=0.28.1" }]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "mypy", specifier = ">=2.3.0" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "ruff", specifier = ">=0.16.1" },
 ]
