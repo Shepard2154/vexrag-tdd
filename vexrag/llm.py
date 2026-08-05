@@ -5,9 +5,12 @@ class LLM:
     def __init__(self):
         http_client = httpx
 
-    def invoke(self, *, prompt: str):
+    def invoke(self, *, url: str, prompt: str, model: str):
+        payload = {"stream": False}
+        payload.update({"prompt": prompt, "model": model})
+
         r = httpx.post(
-            "http://localhost:11434/api/generate",
-            json={"model": "gemma:2b", "prompt": "Привет, как дела?", "stream": False},
+            url,
+            json=payload,
         )
         return r.json()
