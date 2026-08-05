@@ -1,15 +1,12 @@
-import httpx
-
-
 class LLM:
-    def __init__(self):
-        http_client = httpx
+    def __init__(self, *, model: str):
+        self.model = model
 
-    def invoke(self, *, url: str, prompt: str, model: str):
+    def invoke(self, *, url: str, prompt: str, http_client):
         payload = {"stream": False}
-        payload.update({"prompt": prompt, "model": model})
+        payload.update({"prompt": prompt, "model": self.model})
 
-        r = httpx.post(
+        r = http_client.post(
             url,
             json=payload,
         )
