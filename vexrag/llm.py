@@ -6,7 +6,7 @@ class LLMInvocationError(VexragError):
 
 
 class LLM:
-    def __init__(self, *, model: str):
+    def __init__(self, model: str):
         self.model = model
 
     async def invoke(self, *, url: str, prompt: str, http_client):

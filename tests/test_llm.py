@@ -1,7 +1,7 @@
 import httpx
 import pytest
 
-from vexrag.llm import LLMInvocationError, LLM
+from vexrag.llm import LLM, LLMInvocationError
 
 
 class FakeResponse:
@@ -24,7 +24,7 @@ class FakeUnreachableAsyncHttpClient:
 
 async def test_fake_llm_invocation():
     model = "gemma:2b"
-    llm = LLM(model=model)
+    llm = LLM(model)
     url = "http://localhost:11434/api/generate"
     prompt = "hi, who are you?"
     answer = await llm.invoke(url=url, prompt=prompt, http_client=FakeAsyncHttpClient())
@@ -36,7 +36,7 @@ async def test_fake_llm_invocation():
 @pytest.mark.integration
 async def test_llm_invocation():
     model = "gemma:2b"
-    llm = LLM(model=model)
+    llm = LLM(model)
     url = "http://localhost:11434/api/generate"
     prompt = "hi, how are you?"
     answer = await llm.invoke(url=url, prompt=prompt, http_client=httpx.AsyncClient())
@@ -47,7 +47,7 @@ async def test_llm_invocation():
 
 async def test_fake_llm_invocation_with_wrong_url():
     model = "gemma:2b"
-    llm = LLM(model=model)
+    llm = LLM(model)
     url = "http://localhost:000/api/generate"
     prompt = "hi, who are you?"
     with pytest.raises(LLMInvocationError, match="Failed to invoke LLM at"):
@@ -59,7 +59,7 @@ async def test_fake_llm_invocation_with_wrong_url():
 @pytest.mark.integration
 async def test_llm_invocation_with_wrong_url():
     model = "gemma:2b"
-    llm = LLM(model=model)
+    llm = LLM(model)
     url = "http://localhost:000/api/generate"
     prompt = "hi, who are you?"
     with pytest.raises(LLMInvocationError, match="Failed to invoke LLM at"):
