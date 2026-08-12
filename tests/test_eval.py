@@ -30,7 +30,7 @@ async def test_evaluate_reports_attack_successful_with_fake_llm(fake_llm):
         http_client=http_client,
     )
     assert poison_target in result["answer"]
-    assert result["is_attack_successful"] == True
+    assert result["is_attack_successful"]
 
 
 @pytest.mark.integration

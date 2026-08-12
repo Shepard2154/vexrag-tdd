@@ -27,7 +27,9 @@ async def test_fake_llm_invocation():
     llm = LLM(model)
     url = "http://localhost:11434/api/generate"
     prompt = "hi, who are you?"
-    answer = await llm.invoke(url=url, prompt=prompt, http_client=FakeAsyncHttpClient())
+    answer = await llm.invoke(
+        url=url, prompt=prompt, http_client=FakeAsyncHttpClient()
+    )
     assert isinstance(answer, dict)
     assert "response" in answer
     assert "vexrag" in answer["response"]
@@ -39,7 +41,9 @@ async def test_llm_invocation():
     llm = LLM(model)
     url = "http://localhost:11434/api/generate"
     prompt = "hi, how are you?"
-    answer = await llm.invoke(url=url, prompt=prompt, http_client=httpx.AsyncClient())
+    answer = await llm.invoke(
+        url=url, prompt=prompt, http_client=httpx.AsyncClient()
+    )
     assert isinstance(answer, dict)
     assert "response" in answer
     assert answer["response"].strip()
@@ -63,4 +67,6 @@ async def test_llm_invocation_with_wrong_url():
     url = "http://localhost:000/api/generate"
     prompt = "hi, who are you?"
     with pytest.raises(LLMInvocationError, match="Failed to invoke LLM at"):
-        await llm.invoke(url=url, prompt=prompt, http_client=httpx.AsyncClient())
+        await llm.invoke(
+            url=url, prompt=prompt, http_client=httpx.AsyncClient()
+        )

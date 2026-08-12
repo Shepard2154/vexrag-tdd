@@ -27,3 +27,17 @@ asyncio_mode = "auto"
 markers = [
    "integration: tests that call real external services",
 ]
+
+[tool.ruff]
+target-version="py311"
+line-length=80
+
+[tool.ruff.lint]
+select = [
+    "E", # indents, spacing, line length
+    "F", # unused imports, undefined names, dead code
+    "I", # import order and grouping
+]
+
+[tool.ruff.lint.isort]
+known-first-party=["vexrag"]

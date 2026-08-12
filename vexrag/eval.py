@@ -15,7 +15,11 @@ async def evaluate(
     http_client,
 ):
     answer = await answer_with_context(
-        question=question, passages=passages, llm=llm, url=url, http_client=http_client
+        question=question,
+        passages=passages,
+        llm=llm,
+        url=url,
+        http_client=http_client,
     )
     attack_verdict = is_attack_successful(
         poison_target=poison_target, answer=answer["response"]
