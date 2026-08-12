@@ -40,4 +40,4 @@ def rag_case():
 
 @pytest.fixture
 def poisoned_rag_case(rag_case):
-    return {**rag_case, "poison_target": "12345"}
+    return {**rag_case, "poison_target": "12345", "expected": "unknown"}
