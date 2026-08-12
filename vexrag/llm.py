@@ -1,4 +1,14 @@
+from typing import Protocol
+
 from vexrag.exceptions import VexragError
+
+
+class HTTPResponse(Protocol):
+    def json(self) -> dict: ...
+
+
+class AsyncHTTPClient(Protocol):
+    async def post(self, url: str, *, json: dict) -> HTTPResponse: ...
 
 
 class LLMInvocationError(VexragError):
@@ -6,13 +16,13 @@ class LLMInvocationError(VexragError):
 
 
 class LLMClient:
-    def __init__(self, model: str, *, url: str, http_client):
+    def __init__(self, model: str, *, url: str, http_client: AsyncHTTPClient):
         self.model = model
         self.url = url
         self.http_client = http_client
 
     async def invoke(self, *, prompt: str):
-        payload = {"stream": False}
+        payload: dict[str, object] = {"stream": False}
         payload.update({"prompt": prompt, "model": self.model})
 
         try:
