@@ -5,19 +5,23 @@ class LLMInvocationError(VexragError):
     """Raised when the LLM backend cannot be reached or invoke fails."""
 
 
-class LLM:
-    def __init__(self, model: str):
+class LLMClient:
+    def __init__(self, model: str, *, url: str, http_client):
         self.model = model
+        self.url = url
+        self.http_client = http_client
 
-    async def invoke(self, *, url: str, prompt: str, http_client):
+    async def invoke(self, *, prompt: str):
         payload = {"stream": False}
         payload.update({"prompt": prompt, "model": self.model})
 
         try:
-            r = await http_client.post(
-                url,
+            r = await self.http_client.post(
+                self.url,
                 json=payload,
             )
         except Exception as exc:
-            raise LLMInvocationError(f"Failed to invoke LLM at {url}") from exc
+            raise LLMInvocationError(
+                f"Failed to invoke LLM at {self.url}"
+            ) from exc
         return r.json()

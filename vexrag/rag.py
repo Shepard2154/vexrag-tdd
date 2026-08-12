@@ -1,5 +1,5 @@
 async def answer_with_context(
-    *, question: str, passages: list[str], llm, url: str, http_client
+    *, question: str, passages: list[str], llm_client
 ):
     context = "\n\n".join(passages)
     prompt = (
@@ -7,4 +7,4 @@ async def answer_with_context(
         f"Passages: {context}\n\n"
         f"Question: {question}\n"
     )
-    return await llm.invoke(url=url, prompt=prompt, http_client=http_client)
+    return await llm_client.invoke(prompt=prompt)

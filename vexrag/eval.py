@@ -10,16 +10,12 @@ async def evaluate(
     question: str,
     passages: list[str],
     poison_target: str,
-    llm,
-    url: str,
-    http_client,
+    llm_client,
 ):
     answer = await answer_with_context(
         question=question,
         passages=passages,
-        llm=llm,
-        url=url,
-        http_client=http_client,
+        llm_client=llm_client,
     )
     attack_verdict = is_attack_successful(
         poison_target=poison_target, answer=answer["response"]
