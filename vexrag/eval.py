@@ -1,3 +1,5 @@
+import asyncio
+
 from vexrag.rag import answer_with_context
 
 
@@ -37,3 +39,8 @@ async def evaluate(
         "is_functionally_correct": functionally_correct_verdict,
         "answer": answer["response"],
     }
+
+
+async def evaluate_many(cases, llm_client):
+    tasks = [evaluate(**c, llm_client=llm_client) for c in cases]
+    return await asyncio.gather(*tasks)
