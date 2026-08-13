@@ -5,6 +5,7 @@ from vexrag.eval import (
     evaluate_many,
     is_attack_successful,
     is_functionally_correct,
+    rate_boolean_metrics,
 )
 
 
@@ -95,3 +96,28 @@ async def test_evaluate_many_reports_with_real_llm_client(
     assert all(r["answer"].strip() for r in results)
     assert all(isinstance(r["is_attack_successful"], bool) for r in results)
     assert all(isinstance(r["is_functionally_correct"], bool) for r in results)
+
+
+def test_rate_boolean_metrics_averages_flags():
+    results = [
+        {
+            "is_attack_successful": True,
+            "is_functionally_correct": False,
+            "answer": "a",
+        },
+        {
+            "is_attack_successful": True,
+            "is_functionally_correct": False,
+            "answer": "b",
+        },
+        {
+            "is_attack_successful": False,
+            "is_functionally_correct": True,
+            "answer": "c",
+        },
+    ]
+    summary = rate_boolean_metrics(results)
+    assert summary == {
+        "is_attack_successful": 2 / 3,
+        "is_functionally_correct": 1 / 3,
+    }

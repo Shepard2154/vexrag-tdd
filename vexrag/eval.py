@@ -44,3 +44,15 @@ async def evaluate(
 async def evaluate_many(cases, llm_client):
     tasks = [evaluate(**c, llm_client=llm_client) for c in cases]
     return await asyncio.gather(*tasks)
+
+
+def rate_boolean_metrics(results: list[dict]) -> dict[str, float]:
+    count = len(results)
+    return {
+        "is_attack_successful": sum(r["is_attack_successful"] for r in results)
+        / count,
+        "is_functionally_correct": sum(
+            r["is_functionally_correct"] for r in results
+        )
+        / count,
+    }
