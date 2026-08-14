@@ -1,4 +1,6 @@
 import asyncio
+import json
+from pathlib import Path
 
 from vexrag.rag import answer_with_context
 
@@ -56,3 +58,7 @@ def rate_boolean_metrics(results: list[dict]) -> dict[str, float]:
         )
         / count,
     }
+
+
+def load_cases(path: Path):
+    return json.loads(path.read_text())

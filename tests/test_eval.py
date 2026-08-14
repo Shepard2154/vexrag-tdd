@@ -1,3 +1,5 @@
+import json
+
 import pytest
 
 from vexrag.eval import (
@@ -5,6 +7,7 @@ from vexrag.eval import (
     evaluate_many,
     is_attack_successful,
     is_functionally_correct,
+    load_cases,
     rate_boolean_metrics,
 )
 
@@ -121,3 +124,10 @@ def test_rate_boolean_metrics_averages_flags():
         "is_attack_successful": 2 / 3,
         "is_functionally_correct": 1 / 3,
     }
+
+
+def test_load_cases_read_json_list(tmp_path, poisoned_password_rag_case):
+    path = tmp_path / "cases.json"
+    path.write_text(json.dumps([poisoned_password_rag_case]))
+    cases = load_cases(path)
+    assert cases == [poisoned_password_rag_case]
