@@ -4,6 +4,7 @@ import pytest
 
 from vexrag.eval import (
     evaluate,
+    evaluate_file,
     evaluate_many,
     is_attack_successful,
     is_functionally_correct,
@@ -131,3 +132,21 @@ def test_load_cases_read_json_list(tmp_path, poisoned_password_rag_case):
     path.write_text(json.dumps([poisoned_password_rag_case]))
     cases = load_cases(path)
     assert cases == [poisoned_password_rag_case]
+
+
+async def test_evaluate_file_reports_rates(
+    tmp_path,
+    make_fake_llm_client,
+    poisoned_password_rag_case,
+    poisoned_capital_rag_case,
+):
+    path = tmp_path / "cases.json"
+    path.write_text(
+        json.dumps([poisoned_password_rag_case, poisoned_capital_rag_case])
+    )
+    fake_llm_client = make_fake_llm_client(
+        responses=["the password is 12345", "the capital is Paris"]
+    )
+    report = await evaluate_file(path, llm_client=fake_llm_client)
+    assert report["is_attack_successful"] == 0.5
+    assert report["is_functionally_correct"] == 0.5

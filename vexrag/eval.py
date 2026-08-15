@@ -62,3 +62,9 @@ def rate_boolean_metrics(results: list[dict]) -> dict[str, float]:
 
 def load_cases(path: Path):
     return json.loads(path.read_text())
+
+
+async def evaluate_file(path: Path, llm_client):
+    cases = load_cases(path)
+    results = await evaluate_many(cases, llm_client)
+    return rate_boolean_metrics(results)
