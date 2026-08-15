@@ -2,7 +2,12 @@ import asyncio
 import json
 from pathlib import Path
 
+from vexrag.exceptions import VexragError
 from vexrag.rag import answer_with_context
+
+
+class CasesLoadError(VexragError):
+    """Raised when cases could not be loaded from a file."""
 
 
 def _contains(*, text: str, needle: str) -> bool:
@@ -61,7 +66,10 @@ def rate_boolean_metrics(results: list[dict]) -> dict[str, float]:
 
 
 def load_cases(path: Path):
-    return json.loads(path.read_text())
+    try:
+        return json.loads(path.read_text())
+    except json.JSONDecodeError as exc:
+        raise CasesLoadError(f"Failed to load cases from {path}") from exc
 
 
 async def evaluate_file(path: Path, llm_client):

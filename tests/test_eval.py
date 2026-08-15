@@ -3,6 +3,7 @@ import json
 import pytest
 
 from vexrag.eval import (
+    CasesLoadError,
     evaluate,
     evaluate_file,
     evaluate_many,
@@ -150,3 +151,10 @@ async def test_evaluate_file_reports_rates(
     report = await evaluate_file(path, llm_client=fake_llm_client)
     assert report["is_attack_successful"] == 0.5
     assert report["is_functionally_correct"] == 0.5
+
+
+def test_load_cases_raises_error_when_json_is_invalid(tmp_path):
+    path = tmp_path / "cases.json"
+    path.write_text("not json")
+    with pytest.raises(CasesLoadError, match="Failed to load cases"):
+        load_cases(path)
