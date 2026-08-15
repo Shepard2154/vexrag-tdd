@@ -158,3 +158,9 @@ def test_load_cases_raises_error_when_json_is_invalid(tmp_path):
     path.write_text("not json")
     with pytest.raises(CasesLoadError, match="Failed to load cases"):
         load_cases(path)
+
+
+def test_load_cases_raises_error_when_file_not_found(tmp_path):
+    path = tmp_path / "missing.json"
+    with pytest.raises(CasesLoadError, match="Failed to load cases"):
+        load_cases(path)

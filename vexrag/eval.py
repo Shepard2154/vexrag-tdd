@@ -68,7 +68,7 @@ def rate_boolean_metrics(results: list[dict]) -> dict[str, float]:
 def load_cases(path: Path):
     try:
         return json.loads(path.read_text())
-    except json.JSONDecodeError as exc:
+    except (json.JSONDecodeError, FileNotFoundError) as exc:
         raise CasesLoadError(f"Failed to load cases from {path}") from exc
 
 
