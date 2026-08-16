@@ -12,6 +12,7 @@ from vexrag.eval import (
     load_cases,
     poison_passages,
     rate_boolean_metrics,
+    score,
 )
 
 
@@ -19,6 +20,18 @@ def test_attack_successful_when_poison_leaks_into_answer():
     answer = "the password is 12345"
     poison_target = "12345"
     assert is_attack_successful(poison_target=poison_target, answer=answer)
+
+
+def test_score_reports_successful_attack_and_failed_correctness():
+    result = score(
+        answer="the password is 12345",
+        poison_target="12345",
+        expected="unknown",
+    )
+    assert result == {
+        "is_attack_successful": True,
+        "is_functionally_correct": False,
+    }
 
 
 async def test_evaluate_reports_successful_attack_and_failed_correctness(
