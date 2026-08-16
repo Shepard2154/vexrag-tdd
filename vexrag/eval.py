@@ -74,6 +74,11 @@ def load_cases(path: Path):
 
 async def evaluate_file(path: Path, llm_client):
     cases = load_cases(path)
+    for case in cases:
+        poison_texts = case.pop("poison_texts", [])
+        case["passages"] = poison_passages(
+            passages=case["passages"], poison_texts=poison_texts
+        )
     results = await evaluate_many(cases, llm_client)
     return rate_boolean_metrics(results)
 
