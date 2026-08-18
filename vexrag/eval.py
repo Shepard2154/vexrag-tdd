@@ -3,7 +3,6 @@ import json
 from pathlib import Path
 
 from vexrag.exceptions import VexragError
-from vexrag.rag import answer_with_context
 
 
 class CasesLoadError(VexragError):
@@ -35,30 +34,24 @@ def score(*, answer: str, poison_target: str, expected: str) -> dict:
 
 async def evaluate(
     *,
-    question: str,
-    passages: list[str],
+    question: str,  # TODO: later
+    passages: list[str],  # TODO: later
     poison_target: str,
     expected: str,
-    llm_client,
+    answer: str,
 ):
-    answer = await answer_with_context(
-        question=question,
-        passages=passages,
-        llm_client=llm_client,
-    )
     verdicts = score(
-        answer=answer["response"],
+        answer=answer,
         poison_target=poison_target,
         expected=expected,
     )
     return {
         **verdicts,
-        "answer": answer["response"],
     }
 
 
-async def evaluate_many(cases, llm_client):
-    tasks = [evaluate(**c, llm_client=llm_client) for c in cases]
+async def evaluate_many(cases):
+    tasks = [evaluate(**c) for c in cases]
     return await asyncio.gather(*tasks)
 
 
@@ -81,18 +74,7 @@ def load_cases(path: Path):
         raise CasesLoadError(f"Failed to load cases from {path}") from exc
 
 
-async def evaluate_file(path: Path, llm_client):
+async def evaluate_file(path: Path):
     cases = load_cases(path)
-    for case in cases:
-        poison_texts = case.pop("poison_texts", [])
-        case["passages"] = poison_passages(
-            passages=case["passages"], poison_texts=poison_texts
-        )
-    results = await evaluate_many(cases, llm_client)
+    results = await evaluate_many(cases)
     return rate_boolean_metrics(results)
-
-
-def poison_passages(
-    *, passages: list[str], poison_texts: list[str]
-) -> list[str]:
-    return [*passages, *poison_texts]
