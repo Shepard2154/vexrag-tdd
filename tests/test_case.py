@@ -1,4 +1,5 @@
 import json
+from dataclasses import asdict
 
 import pytest
 
@@ -30,9 +31,18 @@ async def test_run_scenario_and_get_case(
 
 def test_load_cases_from_json(tmp_path, password_rag_case):
     path = tmp_path / "cases.json"
-    path.write_text(json.dumps([password_rag_case]))
+    path.write_text(json.dumps([asdict(password_rag_case)]))
     cases = load_cases_from_json(path)
     assert cases == [password_rag_case]
+
+
+def test_load_cases_from_json_raises_error_when_json_not_contain_cases(
+    tmp_path, password_rag_scenario
+):
+    path = tmp_path / "scenario.json"
+    path.write_text(json.dumps(password_rag_scenario))
+    with pytest.raises(CasesLoadError, match="Failed to load cases"):
+        load_cases_from_json(path)
 
 
 def test_load_cases_from_json_raises_error_when_json_is_invalid(tmp_path):

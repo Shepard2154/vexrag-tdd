@@ -32,10 +32,10 @@ class CasesLoadError(VexragError):
     """Raised when cases could not be loaded from a file."""
 
 
-def load_cases_from_json(path: Path):
+def load_cases_from_json(path: Path) -> list[Case]:
     try:
-        return json.loads(path.read_text())
-    except (json.JSONDecodeError, FileNotFoundError) as exc:
+        return [Case(**raw) for raw in json.loads(path.read_text())]
+    except (json.JSONDecodeError, FileNotFoundError, TypeError) as exc:
         raise CasesLoadError(f"Failed to load cases from {path}") from exc
 
 

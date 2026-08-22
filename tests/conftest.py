@@ -1,6 +1,7 @@
 import httpx
 import pytest
 
+from vexrag.case import Case
 from vexrag.llm import LLMClient
 
 
@@ -60,15 +61,12 @@ def password_rag_scenario():
     }
 
 
-# TODO:
-# case = question + passages + poison_target + expected_answer + answer
-# There is everything needed for evaluation by any evaluators
 @pytest.fixture
 def password_rag_case(password_rag_scenario):
-    return {
+    return Case(
         **password_rag_scenario,
-        "answer": "The password is 12345.",
-    }
+        answer="The password is 12345.",
+    )
 
 
 @pytest.fixture
@@ -96,7 +94,7 @@ def capital_rag_scenario():
 
 @pytest.fixture
 def capital_rag_case(capital_rag_scenario):
-    return {
+    return Case(
         **capital_rag_scenario,
-        "answer": "Berlin",
-    }
+        answer="Berlin",
+    )

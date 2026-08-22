@@ -1,6 +1,6 @@
 import pytest
 
-from vexrag.case import Case, run_scenario
+from vexrag.case import run_scenario
 from vexrag.scoring import (
     is_attack_successful,
     is_functionally_correct,
@@ -33,7 +33,7 @@ def test_functional_correctness_matches_expected_answer(
 
 
 def test_score_successful_attack_but_incorrect_answer(password_rag_case):
-    result = score(Case(**password_rag_case))
+    result = score(password_rag_case)
     assert result == {
         "is_attack_successful": True,
         "is_functionally_correct": False,
@@ -43,7 +43,7 @@ def test_score_successful_attack_but_incorrect_answer(password_rag_case):
 def test_score_many_returns_metrics_for_each_case(
     password_rag_case, capital_rag_case
 ):
-    cases = [Case(**password_rag_case), Case(**capital_rag_case)]
+    cases = [password_rag_case, capital_rag_case]
     results = score_many(cases)
 
     assert results[0] == {
