@@ -1,5 +1,5 @@
 import json
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from vexrag.exceptions import VexragError
@@ -28,6 +28,21 @@ class Case:
     answer: str
 
 
+@dataclass
+class Scenario:
+    """
+    This is a plan; there are input data and expectations.
+
+    Attributes:
+    describe the same?
+    """
+
+    question: str
+    passages: list[str]
+    poison_target: str
+    expected_answer: str
+
+
 class CasesLoadError(VexragError):
     """Raised when cases could not be loaded from a file."""
 
@@ -39,10 +54,10 @@ def load_cases_from_json(path: Path) -> list[Case]:
         raise CasesLoadError(f"Failed to load cases from {path}") from exc
 
 
-async def run_scenario(scenario, llm_client) -> Case:
+async def run_scenario(scenario: Scenario, llm_client) -> Case:
     answer = await answer_with_context(
-        question=scenario["question"],
-        passages=scenario["passages"],
+        question=scenario.question,
+        passages=scenario.passages,
         llm_client=llm_client,
     )
-    return Case(**scenario, answer=answer["response"])
+    return Case(**asdict(scenario), answer=answer["response"])

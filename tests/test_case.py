@@ -40,7 +40,7 @@ def test_load_cases_from_json_raises_error_when_json_not_contain_cases(
     tmp_path, password_rag_scenario
 ):
     path = tmp_path / "scenario.json"
-    path.write_text(json.dumps(password_rag_scenario))
+    path.write_text(json.dumps(asdict(password_rag_scenario)))
     with pytest.raises(CasesLoadError, match="Failed to load cases"):
         load_cases_from_json(path)
 
