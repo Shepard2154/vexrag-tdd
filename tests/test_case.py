@@ -3,7 +3,13 @@ from dataclasses import asdict
 
 import pytest
 
-from vexrag.case import Case, CasesLoadError, load_cases_from_json, run_scenario
+from vexrag.case import (
+    Case,
+    RecordLoadError,
+    Scenario,
+    load_from_json,
+    run_scenario,
+)
 
 
 async def test_run_scenario_and_get_case_with_fake_llm_client(
@@ -32,27 +38,34 @@ async def test_run_scenario_and_get_case(
 def test_load_cases_from_json(tmp_path, password_rag_case):
     path = tmp_path / "cases.json"
     path.write_text(json.dumps([asdict(password_rag_case)]))
-    cases = load_cases_from_json(path)
+    cases = load_from_json(path, Case)
     assert cases == [password_rag_case]
 
 
 def test_load_cases_from_json_raises_error_when_json_not_contain_cases(
     tmp_path, password_rag_scenario
 ):
-    path = tmp_path / "scenario.json"
+    path = tmp_path / "scenarios.json"
     path.write_text(json.dumps(asdict(password_rag_scenario)))
-    with pytest.raises(CasesLoadError, match="Failed to load cases"):
-        load_cases_from_json(path)
+    with pytest.raises(RecordLoadError, match="Failed to load"):
+        load_from_json(path, Case)
 
 
 def test_load_cases_from_json_raises_error_when_json_is_invalid(tmp_path):
     path = tmp_path / "cases.json"
     path.write_text("not json")
-    with pytest.raises(CasesLoadError, match="Failed to load cases"):
-        load_cases_from_json(path)
+    with pytest.raises(RecordLoadError, match="Failed to load"):
+        load_from_json(path, Case)
 
 
 def test_load_cases_from_json_raises_error_when_file_not_found(tmp_path):
     path = tmp_path / "missing.json"
-    with pytest.raises(CasesLoadError, match="Failed to load cases"):
-        load_cases_from_json(path)
+    with pytest.raises(RecordLoadError, match="Failed to load"):
+        load_from_json(path, Case)
+
+
+def test_load_scenarios_from_json(tmp_path, password_rag_scenario):
+    path = tmp_path / "scenarios.json"
+    path.write_text(json.dumps([asdict(password_rag_scenario)]))
+    scenarios = load_from_json(path, Scenario)
+    assert scenarios == [password_rag_scenario]

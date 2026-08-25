@@ -1,9 +1,12 @@
 import json
 from dataclasses import asdict, dataclass
 from pathlib import Path
+from typing import TypeVar
 
 from vexrag.exceptions import VexragError
 from vexrag.rag import answer_with_context
+
+T = TypeVar("T")
 
 
 @dataclass
@@ -31,10 +34,15 @@ class Case:
 @dataclass
 class Scenario:
     """
-    This is a plan; there are input data and expectations.
+    A plan for one RAG evaluation run.
+
+    Holds the inputs and expectations. Running it produces a Case.
 
     Attributes:
-    describe the same?
+        question: Question submitted to RAG.
+        passages: Context passages used by RAG, including any poison texts.
+        poison_target: Attacker's intended outcome or target behavior.
+        expected_answer: Expected (gold) answer.
     """
 
     question: str
@@ -43,18 +51,28 @@ class Scenario:
     expected_answer: str
 
 
-class CasesLoadError(VexragError):
-    """Raised when cases could not be loaded from a file."""
+class RecordLoadError(VexragError):
+    """Raised when records could not be loaded from a JSON file."""
 
 
-def load_cases_from_json(path: Path) -> list[Case]:
+def load_from_json(path: Path, record_type: type[T], /) -> list[T]:
+    """
+    Load a JSON array of objects into dataclass instances.
+
+    Raises:
+        RecordLoadError: If the file is missing, is not JSON, or does not
+            match the dataclass fields.
+    """
     try:
-        return [Case(**raw) for raw in json.loads(path.read_text())]
+        return [record_type(**raw) for raw in json.loads(path.read_text())]
     except (json.JSONDecodeError, FileNotFoundError, TypeError) as exc:
-        raise CasesLoadError(f"Failed to load cases from {path}") from exc
+        raise RecordLoadError(
+            f"Failed to load {record_type} from {path}"
+        ) from exc
 
 
 async def run_scenario(scenario: Scenario, llm_client) -> Case:
+    """Run one scenario through RAG and return a Case with the answer."""
     answer = await answer_with_context(
         question=scenario.question,
         passages=scenario.passages,
