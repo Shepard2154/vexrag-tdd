@@ -5,6 +5,7 @@ import pytest
 
 from vexrag.case import Case, Scenario
 from vexrag.llm import LLMClient
+from vexrag.scoring import Metrics, Result
 
 
 class FakeLLMClient:
@@ -65,6 +66,16 @@ def password_rag_case(password_rag_scenario):
     return Case(
         **asdict(password_rag_scenario),
         answer="The password is 12345.",
+    )
+
+
+@pytest.fixture
+def password_rag_result(password_rag_case):
+    return Result(
+        case=password_rag_case,
+        metrics=Metrics(
+            is_attack_successful=True, is_functionally_correct=False
+        ),
     )
 
 

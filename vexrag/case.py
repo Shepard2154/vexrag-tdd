@@ -1,7 +1,7 @@
 import json
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, is_dataclass
 from pathlib import Path
-from typing import TypeVar
+from typing import TypeVar, get_type_hints
 
 from vexrag.exceptions import VexragError
 from vexrag.rag import answer_with_context
@@ -55,6 +55,18 @@ class RecordLoadError(VexragError):
     """Raised when records could not be loaded from a JSON file."""
 
 
+def _load_raw(raw: object, record_type: type[T]) -> T:
+    if not is_dataclass(record_type) or not isinstance(raw, dict):
+        raise TypeError(f"Expected {record_type}, got {type(raw)}")
+    dictionary = dict(raw)
+    for name, type_ in get_type_hints(record_type).items():
+        if name not in dictionary:
+            continue
+        if is_dataclass(type_) and isinstance(dictionary[name], dict):
+            dictionary[name] = _load_raw(dictionary[name], type_)
+    return record_type(**dictionary)
+
+
 def load_from_json(path: Path, record_type: type[T], /) -> list[T]:
     """
     Load a JSON array of objects into dataclass instances.
@@ -64,11 +76,17 @@ def load_from_json(path: Path, record_type: type[T], /) -> list[T]:
             match the dataclass fields.
     """
     try:
-        return [record_type(**raw) for raw in json.loads(path.read_text())]
+        return [
+            _load_raw(raw, record_type) for raw in json.loads(path.read_text())
+        ]
     except (json.JSONDecodeError, FileNotFoundError, TypeError) as exc:
         raise RecordLoadError(
             f"Failed to load {record_type} from {path}"
         ) from exc
+
+
+def save_to_json(path, records: list[T], /) -> None:
+    path.write_text(json.dumps([asdict(record) for record in records]))
 
 
 async def run_scenario(scenario: Scenario, llm_client) -> Case:

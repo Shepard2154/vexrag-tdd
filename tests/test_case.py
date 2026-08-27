@@ -9,7 +9,9 @@ from vexrag.case import (
     Scenario,
     load_from_json,
     run_scenario,
+    save_to_json,
 )
+from vexrag.scoring import Result
 
 
 async def test_run_scenario_and_get_case_with_fake_llm_client(
@@ -69,3 +71,10 @@ def test_load_scenarios_from_json(tmp_path, password_rag_scenario):
     path.write_text(json.dumps([asdict(password_rag_scenario)]))
     scenarios = load_from_json(path, Scenario)
     assert scenarios == [password_rag_scenario]
+
+
+def test_save_to_json_results(tmp_path, password_rag_result):
+    path = tmp_path / "results.json"
+    save_to_json(path, [password_rag_result])
+    results = load_from_json(path, Result)
+    assert results == [password_rag_result]
