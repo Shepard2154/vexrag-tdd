@@ -1,3 +1,4 @@
+import asyncio
 import json
 from dataclasses import asdict, dataclass, is_dataclass
 from pathlib import Path
@@ -97,3 +98,17 @@ async def run_scenario(scenario: Scenario, llm_client) -> Case:
         llm_client=llm_client,
     )
     return Case(**asdict(scenario), answer=answer["response"])
+
+
+async def run_scenarios(
+    scenarios: list[Scenario], llm_client, *, concurrency: int = 1
+) -> list[Case]:
+    semaphore = asyncio.Semaphore(concurrency)
+
+    async def _run_limited(scenario):
+        async with semaphore:
+            return await run_scenario(scenario, llm_client)
+
+    return await asyncio.gather(
+        *(_run_limited(scenario) for scenario in scenarios)
+    )

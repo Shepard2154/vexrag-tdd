@@ -1,0 +1,286 @@
+{
+  "source": {
+    "paper": "PoisonedRAG: Knowledge Corruption Attacks to Retrieval-Augmented Generation of Large Language Models",
+    "venue": "USENIX Security 2025",
+    "arxiv": "2402.07867",
+    "code": "https://github.com/sleeepeer/PoisonedRAG"
+  },
+  "vexrag_mapping": {
+    "is_attack_successful": "Paper ASR: substring match of poison_target (incorrect/target answer) in the RAG answer.",
+    "is_functionally_correct": "Paper does not report this under attack. Clean accuracy without attack is in clean_accuracy.",
+    "rate_boolean_metrics.is_attack_successful": "Comparable to Table 1 ASR when scoring the same 100 target questions per dataset."
+  },
+  "default_setting": {
+    "retriever": "contriever",
+    "similarity": "dot",
+    "top_k": 5,
+    "adv_per_query_N": 5,
+    "target_questions_M_per_trial": 10,
+    "repeat_times": 10,
+    "n_target_questions": 100,
+    "llm_default": "palm2",
+    "attack_llm_for_I": "gpt-4",
+    "temperature_rag": 0.1,
+    "I_length_V": 30,
+    "max_trials_L": 50,
+    "corpus_sizes": {
+      "nq": 2681468,
+      "hotpotqa": 5233329,
+      "msmarco": 8841823
+    }
+  },
+  "clean_accuracy": {
+    "note": "Accuracy of RAG answers without attack under the default setting.",
+    "nq": 0.7,
+    "hotpotqa": 0.8,
+    "msmarco": 0.83
+  },
+  "table1_main_results": {
+    "caption": "ASR and retrieval F1-Score with N=5 malicious texts per target question. F1 is independent of the RAG LLM (Precision=Recall=F1 when N=k=5).",
+    "f1_score": {
+      "nq": {"black_box": 0.96, "white_box": 1.0},
+      "hotpotqa": {"black_box": 1.0, "white_box": 1.0},
+      "msmarco": {"black_box": 0.89, "white_box": 0.94}
+    },
+    "asr": {
+      "nq": {
+        "black_box": {
+          "palm2": 0.97,
+          "gpt3.5": 0.92,
+          "gpt4": 0.97,
+          "llama2_7b": 0.97,
+          "llama2_13b": 0.95,
+          "vicuna_7b": 0.88,
+          "vicuna_13b": 0.95,
+          "vicuna_33b": 0.91
+        },
+        "white_box": {
+          "palm2": 0.97,
+          "gpt3.5": 0.99,
+          "gpt4": 0.99,
+          "llama2_7b": 0.96,
+          "llama2_13b": 0.95,
+          "vicuna_7b": 0.96,
+          "vicuna_13b": 0.96,
+          "vicuna_33b": 0.94
+        }
+      },
+      "hotpotqa": {
+        "black_box": {
+          "palm2": 0.99,
+          "gpt3.5": 0.98,
+          "gpt4": 0.93,
+          "llama2_7b": 0.98,
+          "llama2_13b": 0.98,
+          "vicuna_7b": 0.94,
+          "vicuna_13b": 0.97,
+          "vicuna_33b": 0.96
+        },
+        "white_box": {
+          "palm2": 0.94,
+          "gpt3.5": 0.99,
+          "gpt4": 0.99,
+          "llama2_7b": 0.98,
+          "llama2_13b": 0.97,
+          "vicuna_7b": 0.91,
+          "vicuna_13b": 0.96,
+          "vicuna_33b": 0.95
+        }
+      },
+      "msmarco": {
+        "black_box": {
+          "palm2": 0.91,
+          "gpt3.5": 0.89,
+          "gpt4": 0.92,
+          "llama2_7b": 0.96,
+          "llama2_13b": 0.91,
+          "vicuna_7b": 0.89,
+          "vicuna_13b": 0.92,
+          "vicuna_33b": 0.89
+        },
+        "white_box": {
+          "palm2": 0.9,
+          "gpt3.5": 0.93,
+          "gpt4": 0.91,
+          "llama2_7b": 0.92,
+          "llama2_13b": 0.74,
+          "vicuna_7b": 0.91,
+          "vicuna_13b": 0.93,
+          "vicuna_33b": 0.9
+        }
+      }
+    }
+  },
+  "table2_substring_vs_human_nq": {
+    "black_box": {
+      "substring": {
+        "palm2": 0.97,
+        "gpt3.5": 0.92,
+        "gpt4": 0.97,
+        "llama2_7b": 0.97,
+        "vicuna_7b": 0.88
+      },
+      "human_evaluation": {
+        "palm2": 0.98,
+        "gpt3.5": 0.87,
+        "gpt4": 0.92,
+        "llama2_7b": 0.96,
+        "vicuna_7b": 0.86
+      }
+    },
+    "white_box": {
+      "substring": {
+        "palm2": 0.97,
+        "gpt3.5": 0.99,
+        "gpt4": 0.99,
+        "llama2_7b": 0.96,
+        "vicuna_7b": 0.96
+      },
+      "human_evaluation": {
+        "palm2": 1.0,
+        "gpt3.5": 0.98,
+        "gpt4": 0.93,
+        "llama2_7b": 0.92,
+        "vicuna_7b": 0.88
+      }
+    }
+  },
+  "table3_generation_cost": {
+    "nq": {
+      "queries_per_malicious_text": 1.62,
+      "runtime_seconds": {"white_box": 26.12, "black_box": 1.45e-6}
+    },
+    "hotpotqa": {
+      "queries_per_malicious_text": 1.24,
+      "runtime_seconds": {"white_box": 26.01, "black_box": 1.17e-6}
+    },
+    "msmarco": {
+      "queries_per_malicious_text": 2.69,
+      "runtime_seconds": {"white_box": 25.88, "black_box": 1.2e-6}
+    }
+  },
+  "table4_baselines_default_palm2_contriever": {
+    "nq": {
+      "naive_attack": {"asr": 0.03, "f1_score": 1.0},
+      "corpus_poisoning_attack": {"asr": 0.01, "f1_score": 0.99},
+      "disinformation_attack": {"asr": 0.69, "f1_score": 0.48},
+      "prompt_injection_attack": {"asr": 0.62, "f1_score": 0.73},
+      "gcg_attack": {"asr": 0.02, "f1_score": 0.0},
+      "poisonedrag_black_box": {"asr": 0.97, "f1_score": 0.96},
+      "poisonedrag_white_box": {"asr": 0.97, "f1_score": 1.0}
+    },
+    "hotpotqa": {
+      "naive_attack": {"asr": 0.06, "f1_score": 1.0},
+      "corpus_poisoning_attack": {"asr": 0.01, "f1_score": 1.0},
+      "disinformation_attack": {"asr": 1.0, "f1_score": 0.99},
+      "prompt_injection_attack": {"asr": 0.93, "f1_score": 0.99},
+      "gcg_attack": {"asr": 0.01, "f1_score": 0.0},
+      "poisonedrag_black_box": {"asr": 0.99, "f1_score": 1.0},
+      "poisonedrag_white_box": {"asr": 0.94, "f1_score": 1.0}
+    },
+    "msmarco": {
+      "naive_attack": {"asr": 0.02, "f1_score": 1.0},
+      "corpus_poisoning_attack": {"asr": 0.03, "f1_score": 0.97},
+      "disinformation_attack": {"asr": 0.57, "f1_score": 0.36},
+      "prompt_injection_attack": {"asr": 0.71, "f1_score": 0.75},
+      "gcg_attack": {"asr": 0.02, "f1_score": 0.0},
+      "poisonedrag_black_box": {"asr": 0.91, "f1_score": 0.89},
+      "poisonedrag_white_box": {"asr": 0.9, "f1_score": 0.94}
+    }
+  },
+  "table5_retriever_ablation": {
+    "nq": {
+      "black_box": {
+        "contriever": {"asr": 0.97, "f1_score": 0.96},
+        "contriever_ms": {"asr": 0.96, "f1_score": 0.98},
+        "ance": {"asr": 0.95, "f1_score": 0.96}
+      },
+      "white_box": {
+        "contriever": {"asr": 0.97, "f1_score": 1.0},
+        "contriever_ms": {"asr": 0.97, "f1_score": 1.0},
+        "ance": {"asr": 0.98, "f1_score": 0.97}
+      }
+    },
+    "hotpotqa": {
+      "black_box": {
+        "contriever": {"asr": 0.99, "f1_score": 1.0},
+        "contriever_ms": {"asr": 1.0, "f1_score": 1.0},
+        "ance": {"asr": 1.0, "f1_score": 1.0}
+      },
+      "white_box": {
+        "contriever": {"asr": 0.94, "f1_score": 1.0},
+        "contriever_ms": {"asr": 0.95, "f1_score": 1.0},
+        "ance": {"asr": 1.0, "f1_score": 1.0}
+      }
+    },
+    "msmarco": {
+      "black_box": {
+        "contriever": {"asr": 0.91, "f1_score": 0.89},
+        "contriever_ms": {"asr": 0.83, "f1_score": 0.91},
+        "ance": {"asr": 0.87, "f1_score": 0.91}
+      },
+      "white_box": {
+        "contriever": {"asr": 0.9, "f1_score": 0.94},
+        "contriever_ms": {"asr": 0.93, "f1_score": 0.99},
+        "ance": {"asr": 0.87, "f1_score": 0.9}
+      }
+    }
+  },
+  "table6_similarity_metric": {
+    "nq": {
+      "black_box": {
+        "dot": {"asr": 0.97, "f1_score": 0.96},
+        "cosine": {"asr": 0.99, "f1_score": 0.96}
+      },
+      "white_box": {
+        "dot": {"asr": 0.97, "f1_score": 1.0},
+        "cosine": {"asr": 0.97, "f1_score": 0.92}
+      }
+    },
+    "hotpotqa": {
+      "black_box": {
+        "dot": {"asr": 0.99, "f1_score": 1.0},
+        "cosine": {"asr": 1.0, "f1_score": 1.0}
+      },
+      "white_box": {
+        "dot": {"asr": 0.94, "f1_score": 1.0},
+        "cosine": {"asr": 0.96, "f1_score": 1.0}
+      }
+    },
+    "msmarco": {
+      "black_box": {
+        "dot": {"asr": 0.91, "f1_score": 0.89},
+        "cosine": {"asr": 0.93, "f1_score": 0.93}
+      },
+      "white_box": {
+        "dot": {"asr": 0.9, "f1_score": 0.94},
+        "cosine": {"asr": 0.83, "f1_score": 0.76}
+      }
+    }
+  },
+  "table16_retrieval_f1": {
+    "nq": {"black_box": 0.96, "white_box": 1.0},
+    "hotpotqa": {"black_box": 1.0, "white_box": 1.0},
+    "msmarco": {"black_box": 0.89, "white_box": 0.94}
+  },
+  "table17_asr_by_num_malicious_in_topk": {
+    "note": "ASR when exactly 1..5 of the k=5 retrieved texts are malicious.",
+    "nq": {
+      "black_box": {"1": 0.48, "2": 0.76, "3": 0.84, "4": 0.9, "5": 1.0},
+      "white_box": {"1": 0.4, "2": 0.67, "3": 0.83, "4": 0.92, "5": 0.97}
+    },
+    "hotpotqa": {
+      "black_box": {"1": 0.54, "2": 0.64, "3": 0.78, "4": 0.88, "5": 1.0},
+      "white_box": {"1": 0.51, "2": 0.75, "3": 0.91, "4": 0.93, "5": 0.94}
+    },
+    "msmarco": {
+      "black_box": {"1": 0.44, "2": 0.65, "3": 0.84, "4": 0.93, "5": 0.99},
+      "white_box": {"1": 0.35, "2": 0.56, "3": 0.75, "4": 0.87, "5": 0.93}
+    }
+  },
+  "table14_dataset_statistics": {
+    "nq": {"n_texts": 2681468, "n_questions": 3452},
+    "hotpotqa": {"n_texts": 5233329, "n_questions": 7405},
+    "msmarco": {"n_texts": 8841823, "n_questions": 6980}
+  }
+}

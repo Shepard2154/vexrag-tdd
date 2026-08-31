@@ -9,6 +9,7 @@ from vexrag.case import (
     Scenario,
     load_from_json,
     run_scenario,
+    run_scenarios,
     save_to_json,
 )
 from vexrag.scoring import Result
@@ -35,6 +36,16 @@ async def test_run_scenario_and_get_case(
     case = await run_scenario(password_rag_scenario, ollama_llm_client)
     assert isinstance(case, Case)
     assert case.answer.strip()
+
+
+@pytest.mark.integration
+async def test_run_scenarios_with_limited_concurrency(
+    ollama_llm_client, nq_scenarios
+):
+    """Run scenarios with at most 3 concurrent LLM calls."""
+    cases = await run_scenarios(nq_scenarios, ollama_llm_client, concurrency=3)
+    assert len(cases) == len(nq_scenarios)
+    assert all(isinstance(case, Case) and case.answer.strip() for case in cases)
 
 
 def test_load_cases_from_json(tmp_path, password_rag_case):

@@ -1,9 +1,10 @@
 from dataclasses import asdict
+from pathlib import Path
 
 import httpx
 import pytest
 
-from vexrag.case import Case, Scenario
+from vexrag.case import Case, Scenario, load_from_json
 from vexrag.llm import LLMClient
 from vexrag.scoring import Metrics, Result
 
@@ -31,7 +32,9 @@ def ollama_llm_client():
     return LLMClient(
         "gemma:2b",
         url="http://localhost:11434/api/generate",
-        http_client=httpx.AsyncClient(),
+        http_client=httpx.AsyncClient(
+            timeout=httpx.Timeout(120.0, connect=5.0)
+        ),
     )
 
 
@@ -108,3 +111,9 @@ def capital_rag_case(capital_rag_scenario):
         **asdict(capital_rag_scenario),
         answer="Berlin",
     )
+
+
+@pytest.fixture
+def nq_scenarios():
+    path = Path(__file__).parent / "fixtures" / "poisonedrag_nq_scenarios.json"
+    return load_from_json(path, Scenario)
